@@ -1,0 +1,9 @@
+{
+  "name": "extra-normal",
+  "author": "Max Yinger",
+  "version": "1.0.0",
+  "description": "⏲ Declarative timelines for animating pure values.",
+  "main": "index.js",
+  "license": "MIT",
+  "private": false
+}
