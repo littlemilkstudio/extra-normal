@@ -1,9 +1,42 @@
 {
   "name": "extra-normal",
-  "author": "Max Yinger",
+  "author": "Max Yinger <max.yinger@formidable.com>",
   "version": "1.0.0",
-  "description": "⏲ Declarative timelines for animating pure values.",
-  "main": "index.js",
+  "description": "Declarative timelines for animating pure values.",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "main": "dist/cjs/extra-normal.js",
+  "module": "dist/esm/extra-normal.esm.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "check:ts": "tsc --noEmit",
+    "build": "rollup -c",
+    "clean": "rimraf dist node_modules/.cache",
+    "lint": "yarn check:ts && eslint src/**/*.ts",
+    "preversion": "yarn clean && yarn lint && yarn build"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-typescript": "^7.9.0",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^2.0.2",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.1.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-terser": "^5.3.0",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "typescript": "^3.8.3"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
 }
