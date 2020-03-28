@@ -3,6 +3,7 @@
   "author": "Max Yinger <max.yinger@formidable.com>",
   "version": "0.0.0",
   "description": "Declarative timelines for animating pure values.",
+  "repository": "https://github.com/littlemilkstudio/extra-normal",
   "license": "MIT",
   "private": false,
   "main": "dist/cjs/extra-normal.js",
