@@ -1,7 +1,7 @@
 {
   "name": "extra-normal",
   "author": "Max Yinger <max.yinger@formidable.com>",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Declarative timelines for animating pure values.",
   "license": "MIT",
   "private": false,
