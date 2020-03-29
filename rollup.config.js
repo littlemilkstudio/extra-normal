@@ -50,7 +50,8 @@ const makePlugins = ({ isProduction }) => {
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isProduction
-        }
+        },
+        exclude: ["node_modules", "src/**/*.test.ts"],
       }
     }),
     babel(),
