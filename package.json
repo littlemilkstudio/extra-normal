@@ -17,17 +17,21 @@
     "build": "rollup -c",
     "clean": "rimraf dist node_modules/.cache",
     "lint": "yarn check:ts && eslint src/**/*.ts",
-    "preversion": "yarn clean && yarn lint && yarn build"
+    "preversion": "yarn clean && yarn lint && yarn build",
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-typescript": "^7.9.0",
+    "@types/jest": "^25.1.4",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
+    "babel-jest": "^25.2.3",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.2.3",
     "prettier": "^2.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.1.0",

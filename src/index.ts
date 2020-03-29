@@ -1,4 +1,4 @@
-interface FooProps {
+export interface FooProps {
   v: number;
 }
 
