@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "./dist",
+    "declarationDir": "dist/types",
     "forceConsistentCasingInFileNames": true,
     "lib": ["esnext", "dom"],
     "module": "esnext",
