@@ -13,12 +13,13 @@
     "dist/",
     "rollup.config.js"
   ],
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "import"],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "varsIgnorePattern": "_" }
     ],
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/no-default-export": "error"
   }
 }
