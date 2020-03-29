@@ -9,7 +9,5 @@
       }
     ],
     "@babel/preset-typescript"
-  ],
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules/**"]
+  ]
 }
