@@ -8,7 +8,7 @@
   "private": false,
   "main": "dist/cjs/extra-normal.js",
   "module": "dist/esm/extra-normal.esm.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
@@ -43,5 +43,16 @@
   "prettier": {
     "singleQuote": true,
     "trailingComma": "es5"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "./src/**/*.ts": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
   }
 }
