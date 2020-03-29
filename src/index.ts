@@ -1,2 +1,1 @@
-// export { foo } from './foo';
-export * from './foo';
+export { foo } from './foo';
