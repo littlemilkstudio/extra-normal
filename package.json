@@ -18,7 +18,8 @@
     "clean": "rimraf dist node_modules/.cache",
     "lint": "yarn check:ts && eslint src/**/*.ts",
     "preversion": "yarn clean && yarn lint && yarn build",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
