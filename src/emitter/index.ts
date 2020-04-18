@@ -1,1 +1,1 @@
-export const emitter = {};
+export * from './emitter';
