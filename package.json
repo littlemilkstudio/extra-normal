@@ -10,7 +10,8 @@
   "module": "dist/esm/extra-normal.esm.js",
   "types": "./dist/types/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "package.json"
   ],
   "scripts": {
     "check:ts": "tsc --noEmit",
