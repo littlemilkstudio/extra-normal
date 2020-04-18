@@ -56,6 +56,9 @@
         "lines": 100,
         "statements": 100
       }
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
     }
   }
 }

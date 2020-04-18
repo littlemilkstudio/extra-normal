@@ -19,7 +19,7 @@ export type Normal<T> = {
    */
   duration: () => number;
   /**
-   * **progress(|0 - 100|)**
+   * **progress(|0 - 1|)**
    *
    * - Returns interpolated `progress` of `Normal`
    * - Emits interpolated `progress` to subscribers

@@ -19,6 +19,7 @@
       "error",
       { "varsIgnorePattern": "_" }
     ],
+    "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "import/no-default-export": "error"
   }
