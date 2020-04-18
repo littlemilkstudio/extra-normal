@@ -2,6 +2,8 @@ import { lerp } from '../lerp';
 
 export type Range = [number, number];
 
+export const NORMAL: Range = [0, 1];
+
 export const clamp = (v: number, range: Range): number => {
   const lowerBound = Math.min(range[0], range[1]);
   const upperBound = Math.max(range[0], range[1]);
