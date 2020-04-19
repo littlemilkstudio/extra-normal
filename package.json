@@ -56,6 +56,16 @@
         "lines": 100,
         "statements": 100
       }
+    },
+    "moduleDirectories": [
+      ".",
+      "src"
+    ],
+    "moduleNameMapper": {
+      "^calc/(.*)": "<rootDir>/src/calc/$1",
+      "^ease/(.*)": "<rootDir>/src/ease/$1",
+      "^emitter/(.*)": "<rootDir>/src/emitter/$1",
+      "^normal/(.*)": "<rootDir>/src/normal/$1"
     }
   }
 }
