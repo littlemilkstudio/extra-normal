@@ -11,6 +11,10 @@ export const clamp = (v: number, range: Range): number => {
   return Math.min(Math.max(lowerBound, v), upperBound);
 };
 
+export const delta = (range: Range): number => {
+  return Math.abs(range[1] - range[0]);
+};
+
 export const progress = (v: number, range: Range): number => {
   const clamped = clamp(v, range);
   const delta = clamped - range[0];

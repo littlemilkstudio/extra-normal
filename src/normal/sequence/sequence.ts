@@ -1,4 +1,4 @@
-import { NORMAL, Range, transform } from 'calc';
+import { delta, NORMAL, Range, transform } from 'calc';
 import { emitter } from 'emitter';
 import { Normal } from '../types';
 
@@ -14,8 +14,8 @@ type Value<T extends Config<Entry<any>>> = {
   [k in keyof T]: ReturnType<T[keyof T]['normal']['progress']>;
 };
 
-const current = (t: number, offset?: Offset): number => {
-  return !offset ? t : typeof offset === 'number' ? t + offset : offset(t);
+export const current = (t: number, offset?: Offset): number => {
+  return !offset ? t : typeof offset === 'number' ? offset : offset(t);
 };
 
 export const range = (config: Config<Entry<any>>): Range => {
@@ -33,18 +33,20 @@ export const range = (config: Config<Entry<any>>): Range => {
 type Normalized<T extends Config<Entry>> = {
   [k in keyof T]: Range;
 };
-const normalize = <T extends Config<Entry>>(config: T): Normalized<T> => {
+export const normalize = <T extends Config<Entry>>(
+  config: T
+): Normalized<T> => {
   const sequenceRange = range(config);
+
   return Object.entries(config).reduce<[Normalized<T>, number]>(
     ([normalized, t], [key, entry]) => {
       const now = current(t, entry.offset);
       const entryRange: Range = [now, now + entry.normal.duration()];
       normalized[key as keyof T] = [
-        entryRange[0] / sequenceRange[0],
-        entryRange[1] / sequenceRange[1],
+        entryRange[0] / delta(sequenceRange),
+        entryRange[1] / delta(sequenceRange),
       ];
-
-      return [normalized, Math.max(t, current(t, entry.offset))];
+      return [normalized, Math.max(t, current(t, entryRange[1]))];
     },
     [{} as Normalized<T>, 0]
   )[0];
@@ -71,7 +73,7 @@ export const sequence = <T extends Config<Entry<any>>>(
 
   return {
     duration: () => {
-      return sequenceRange[1] - sequenceRange[0];
+      return delta(sequenceRange);
     },
     progress: (p: number) => {
       const interpolated = sequenceInterpolator(p);
