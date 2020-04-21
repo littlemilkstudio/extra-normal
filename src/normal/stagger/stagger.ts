@@ -1,19 +1,41 @@
+import { clamp, NORMAL, Range } from 'calc';
+import { emitter } from 'emitter';
 import { Normal } from '../types';
-import { emitter } from './emitter';
 
-type Config = {};
+type Config<T> = {
+  length: number;
+  stagger: number | ((i: number) => number);
+  normal: Normal<T>;
+};
 
-export const stagger = <T extends Normal<any>>(config: Config): Normal<T[]> => {
-  const subscription = emitter<T[]>();
+const interpolator = <T>(config: Config<T>) => {
+  const stagger = Array.from({ length: config.length }, (_, i) =>
+    typeof config.stagger === 'number' ? config.stagger : config.stagger(i)
+  );
+
+  return (p: number): T[] => {
+    const clamped = clamp(p, NORMAL);
+    console.log(clamped, stagger);
+    return [];
+  };
+};
+
+export const stagger = <T>(config: Config<T>): Normal<T[]> => {
+  const stream = emitter<T[]>();
+  const configured = {
+    range: [0, 1] as Range,
+    interpolator: interpolator(config),
+  };
 
   return {
     duration: () => {
       return 300;
     },
     progress: (p: number) => {
-      console.log(p);
-      return [];
+      const interpolated = configured.interpolator(p);
+      stream.next(interpolated);
+      return interpolated;
     },
-    subscribe: subscription.subscribe,
+    subscribe: stream.subscribe,
   };
 };

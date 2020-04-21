@@ -1,9 +1,9 @@
 export type Subscriber<T> = (v: T) => void;
 export type Unsubscribe = () => void;
 export type Subscribe<T> = (subscriber: Subscriber<T>) => Unsubscribe;
-export type Emit<T> = (v: T) => void;
+export type Next<T> = (v: T) => void;
 export type Emitter<T> = {
-  emit: Emit<T>;
+  next: Next<T>;
   subscribe: Subscribe<T>;
 };
 
@@ -18,14 +18,14 @@ export const emitter = <T>(): Emitter<T> => {
     };
   };
 
-  const emit: Emit<T> = (v) => {
+  const next: Next<T> = (v) => {
     subscriptions.forEach((subscriber) => {
       subscriber(v);
     });
   };
 
   return {
-    emit,
+    next,
     subscribe,
   };
 };
