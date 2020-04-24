@@ -7,10 +7,10 @@ type Entry<T = any> = {
   normal: Normal<T>;
   offset?: Offset;
 };
-type Config<T extends Entry<number | object>> = {
+export type Config<T extends Entry<number | object>> = {
   [k: string]: T;
 };
-type Value<T extends Config<Entry<any>>> = {
+type Value<T extends Config<Entry>> = {
   [k in keyof T]: ReturnType<T[keyof T]['normal']['progress']>;
 };
 
@@ -18,7 +18,7 @@ export const current = (t: number, offset?: Offset): number => {
   return !offset ? t : typeof offset === 'number' ? offset : offset(t);
 };
 
-export const range = (config: Config<Entry<any>>): Range => {
+export const range = (config: Config<Entry>): Range => {
   return Object.values(config).reduce<Range>(
     (r, entry) => {
       const t = current(r[1], entry.offset);
@@ -55,17 +55,17 @@ export const normalize = <T extends Config<Entry>>(
 type Interpolator<T extends Config<Entry>> = (p: number) => Value<T>;
 const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
   const normalized = normalize(config);
-
-  return (p) =>
-    Object.entries(config).reduce<Value<T>>((value, [key, entry]) => {
-      const clamped = clamp(p, NORMAL);
+  return (p) => {
+    const clamped = clamp(p, NORMAL);
+    return Object.entries(config).reduce<Value<T>>((value, [key, entry]) => {
       const entryProgress = transform(clamped, normalized[key], NORMAL);
       value[key as keyof T] = entry.normal.progress(entryProgress);
       return value;
     }, {} as Value<T>);
+  };
 };
 
-export const sequence = <T extends Config<Entry<any>>>(
+export const sequence = <T extends Config<Entry>>(
   config: T
 ): Normal<Value<T>> => {
   const stream = emitter<Value<T>>();

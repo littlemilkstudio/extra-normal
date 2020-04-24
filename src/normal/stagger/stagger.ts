@@ -4,7 +4,7 @@ import { Normal } from '../types';
 
 type Stagger = number | ((i: number) => number);
 
-type Config<T> = {
+export type Config<T> = {
   length: number;
   stagger: Stagger;
   normal: Normal<T>;
