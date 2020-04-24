@@ -1,4 +1,4 @@
-import { delta, NORMAL, Range, transform } from 'calc';
+import { clamp, delta, NORMAL, Range, transform } from 'calc';
 import { emitter } from 'emitter';
 import { Normal } from '../types';
 
@@ -36,15 +36,15 @@ type Normalized<T extends Config<Entry>> = {
 export const normalize = <T extends Config<Entry>>(
   config: T
 ): Normalized<T> => {
-  const sequenceRange = range(config);
+  const configRange = range(config);
 
   return Object.entries(config).reduce<[Normalized<T>, number]>(
     ([normalized, t], [key, entry]) => {
       const now = current(t, entry.offset);
       const entryRange: Range = [now, now + entry.normal.duration()];
       normalized[key as keyof T] = [
-        entryRange[0] / delta(sequenceRange),
-        entryRange[1] / delta(sequenceRange),
+        entryRange[0] / delta(configRange),
+        entryRange[1] / delta(configRange),
       ];
       return [normalized, Math.max(t, current(t, entryRange[1]))];
     },
@@ -58,7 +58,8 @@ const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
 
   return (p) =>
     Object.entries(config).reduce<Value<T>>((value, [key, entry]) => {
-      const entryProgress = transform(p, normalized[key], NORMAL);
+      const clamped = clamp(p, NORMAL);
+      const entryProgress = transform(clamped, normalized[key], NORMAL);
       value[key as keyof T] = entry.normal.progress(entryProgress);
       return value;
     }, {} as Value<T>);
@@ -67,19 +68,21 @@ const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
 export const sequence = <T extends Config<Entry<any>>>(
   config: T
 ): Normal<Value<T>> => {
-  const subscription = emitter<Value<T>>();
-  const sequenceRange = range(config);
-  const sequenceInterpolator = interpolator(config);
+  const stream = emitter<Value<T>>();
+  const configured = {
+    range: range(config),
+    interpolator: interpolator(config),
+  };
 
   return {
     duration: () => {
-      return delta(sequenceRange);
+      return delta(configured.range);
     },
     progress: (p: number) => {
-      const interpolated = sequenceInterpolator(p);
-      subscription.emit(interpolated);
+      const interpolated = configured.interpolator(p);
+      stream.next(interpolated);
       return interpolated;
     },
-    subscribe: subscription.subscribe,
+    subscribe: stream.subscribe,
   };
 };

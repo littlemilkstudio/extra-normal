@@ -3,13 +3,13 @@ import { Ease, ease } from 'ease';
 import { emitter } from 'emitter';
 import { Normal } from '../types';
 
-type Value = {
+export type Value = {
   [k: string]: number;
 };
-type ShapeOf<T> = {
+export type ShapeOf<T> = {
   [k in keyof T]: number;
 };
-type Config<T> = {
+export type Config<T> = {
   duration?: number;
   ease?: Ease;
   from: T;
@@ -17,9 +17,7 @@ type Config<T> = {
 };
 type ConditionalConfig<T> = T extends Value ? Config<T> : Config<number>;
 
-const isNumberConfig = <T extends Value | number>(
-  config: Config<T | number>
-): config is Config<number> => {
+const isNumberConfig = (config: any): config is Config<number> => {
   return typeof config.from === 'number';
 };
 
@@ -47,15 +45,15 @@ export function tween<T extends Value>(config: Config<T>): Normal<ShapeOf<T>>;
 export function tween<T>(
   config: ConditionalConfig<T>
 ): Normal<ShapeOf<T> | number> {
-  const subscription = emitter<ShapeOf<T> | number>();
+  const stream = emitter<ShapeOf<T> | number>();
 
   return {
     duration: () => config.duration || 300,
     progress: (v) => {
       const interpolated = interpolator(config)(v);
-      subscription.emit(interpolated);
+      stream.next(interpolated);
       return interpolated;
     },
-    subscribe: subscription.subscribe,
+    subscribe: stream.subscribe,
   };
 }
