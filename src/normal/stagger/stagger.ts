@@ -2,35 +2,41 @@ import { clamp, delta, NORMAL, Range, transform } from 'calc';
 import { emitter } from 'emitter';
 import { Normal } from '../types';
 
+type Stagger = number | ((i: number) => number);
+
 type Config<T> = {
   length: number;
-  stagger: number | ((i: number) => number);
+  stagger: Stagger;
   normal: Normal<T>;
+};
+
+const current = (stagger: Stagger, i: number) => {
+  return typeof stagger === 'number' ? stagger * i : stagger(i);
 };
 
 export const range = <T>(config: Config<T>): Range => {
   const duration = config.normal.duration();
-  const staggers = Array.from({ length: config.length }, (_, i) =>
-    typeof config.stagger === 'number' ? config.stagger : config.stagger(i)
+  const starts = Array.from({ length: config.length }, (_, i) =>
+    current(config.stagger, i)
   );
 
-  return staggers.reduce<Range>(
-    (r, stagger) => {
-      return [Math.min(r[0], stagger), Math.max(r[1], stagger + duration)];
+  return starts.reduce<Range>(
+    (r, entry) => {
+      return [Math.min(r[0], entry), Math.max(r[1], entry + duration)];
     },
-    [staggers[0], staggers[0] + duration]
+    [starts[0], starts[0] + duration]
   );
 };
 
 export const interpolator = <T>(config: Config<T>) => {
-  const staggers = Array.from({ length: config.length }, (_, i) =>
-    typeof config.stagger === 'number' ? config.stagger : config.stagger(i)
+  const starts = Array.from({ length: config.length }, (_, i) =>
+    current(config.stagger, i)
   );
   const duration = config.normal.duration();
   const configRange = range(config);
-  const normalized = staggers.map<Range>((stagger) => [
-    stagger / delta(configRange),
-    (stagger + duration) / delta(configRange),
+  const normalized = starts.map<Range>((entry) => [
+    entry / delta(configRange),
+    (entry + duration) / delta(configRange),
   ]);
 
   return (p: number): T[] => {
