@@ -16,9 +16,10 @@
     "target": "ES2015",
     "paths": {
       "calc/*": ["./calc/*"],
+      "controller/*": ["./controller/*"],
       "ease/*": ["./ease/*"],
       "emitter/*": ["./emitter/*"],
-      "normal/*": ["./normal/*"],
+      "normal/*": ["./normal/*"]
     }
   },
   "include": ["src/**/*.ts"],

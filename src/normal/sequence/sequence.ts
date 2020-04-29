@@ -2,8 +2,8 @@ import { clamp, delta, NORMAL, Range, transform } from 'calc';
 import { emitter } from 'emitter';
 import { Normal } from '../types';
 
-type Offset = number | ((t: number) => number);
-type Entry<T = any> = {
+export type Offset = number | ((t: number) => number);
+export type Entry<T = any> = {
   normal: Normal<T>;
   offset?: Offset;
 };
