@@ -59,7 +59,7 @@ const Component = () => {
     I( v => clamp(v, NORMAL) )
     .I( v => clamp(v, NORMAL) )
     .I( v => clamp(v, NORMAL) )
-    .fn
+    .O
   );
 
   progress.subscribe(normal.progress);
