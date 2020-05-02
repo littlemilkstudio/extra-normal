@@ -1,32 +1,24 @@
 import { transform, NORMAL, Range } from 'calc';
 import { Normal } from 'normal';
 
-/**
- * Scratch pad
- * -----------
- * complete?
- * onNextComplete?
- * - Complete looping anim on next completion
- *
- * have looper() & player() separate?
- */
-
 export type Config<T = any> = {
   normal: Normal<T>;
-  timeScale?: number;
+  scale?: number;
 };
 
 export const player = <T>(config: Config<T>): any => {
+  const scale = config.scale || 1;
   let frame: null | number = null;
 
-  const loop = (start: number) => {
-    const duration = config.normal.duration() * (config.timeScale || 1);
+  const loop = (from: number, start: number) => {
+    const duration = config.normal.duration() * scale;
+    const offset = from * duration;
     const range: Range = [0, duration];
 
     return new Promise((resolve) => {
       const recurse = () => {
         const delta = performance.now() - start;
-        const progress = transform(delta, range, NORMAL);
+        const progress = transform(offset + delta, range, NORMAL);
 
         config.normal.progress(progress);
 
@@ -42,8 +34,9 @@ export const player = <T>(config: Config<T>): any => {
   };
 
   return {
-    play: () => {
-      return loop(performance.now());
+    play: (args: { from?: number }) => {
+      const from = args.from || 0;
+      return loop(from, performance.now());
     },
     pause: () => {
       if (frame) {
@@ -62,22 +55,28 @@ const normal = tween({
 });
 
 const Component = () => {
-  normal.subscribe((v) => {
-    console.log(v);
-  });
+  const progress = value(0).pipe(
+    I( v => clamp(v, NORMAL) )
+    .I( v => clamp(v, NORMAL) )
+    .I( v => clamp(v, NORMAL) )
+    .fn
+  );
+
+  progress.subscribe(normal.progress);
 
   const { play, pause } = player({
     normal,
   });
 
-  const { play, pause, complete('nearest' | 'start' | 'end') } = looper({
-    yoyo: false,
-    normal,
+  normal.subscribe((v) => {
+    // some DOM manipulation;
   });
 
-  const css = sampler({
-    normal,
-  });
+  onClick={() => play({ 
+    from: progress.get() 
+  }).then(() => send({type: 'AnimationComplete' }))}
+
+  onMouseMove={y => setprogress(normalizedY)}
 };
 
 */
