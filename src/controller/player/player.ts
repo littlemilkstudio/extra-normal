@@ -4,6 +4,12 @@ import { Normal } from 'normal';
 export type Config<T = any> = {
   normal: Normal<T>;
   scale?: number;
+  events?: {
+    onPlay?: VoidFunction;
+    onUpdate?: (p: number) => void;
+    onComplete?: VoidFunction;
+    onPause?: VoidFunction;
+  };
 };
 
 export const player = <T>(config: Config<T>): any => {
@@ -14,6 +20,7 @@ export const player = <T>(config: Config<T>): any => {
     const duration = config.normal.duration() * scale;
     const offset = from * duration;
     const range: Range = [0, duration];
+    config.events?.onPlay?.();
 
     return new Promise((resolve) => {
       const recurse = () => {
@@ -21,11 +28,13 @@ export const player = <T>(config: Config<T>): any => {
         const progress = transform(offset + delta, range, NORMAL);
 
         config.normal.progress(progress);
+        config.events?.onUpdate?.(progress);
 
         if (progress < 1) {
           frame = requestAnimationFrame(recurse);
         } else {
           frame = null;
+          config.events?.onComplete?.();
           resolve();
         }
       };
@@ -42,6 +51,7 @@ export const player = <T>(config: Config<T>): any => {
       if (frame) {
         cancelAnimationFrame(frame);
         frame = null;
+        config.events?.onPause?.();
       }
     },
   };
@@ -49,17 +59,20 @@ export const player = <T>(config: Config<T>): any => {
 
 /**
 
-const normal = tween({
-  from: 0,
-  to: 1,
-});
+const normal = sequence({
+  anim1: {},
+  anim2: {},
+  anim3: {}
+})
 
-const Component = () => {
-  const progress = value(0)
-    .pipe(v => clamp(v, NORMAL))
-    .play(p => normal.progress(p));
+const Component = (controller) => {
+  normal.subscribe(v => {
+    // DOM manipulations
+  })
 
-  const { play, pause } = player({
+  constroller.subscribe(normal.progress);
+
+  const { subscibe, play, pause } = player({
     scale: 2,
     normal,
     events: {
@@ -69,16 +82,6 @@ const Component = () => {
       onPause
     }
   });
-
-  normal.subscribe(v => {
-    console.log(V);
-  })
-
-  onClick={() => play({ 
-    from: progress.get() 
-  })}
-
-  onMouseMove={y => progress.set(normalizedY)}
 };
 
 */
