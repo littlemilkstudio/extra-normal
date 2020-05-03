@@ -1,5 +1,5 @@
+import { emit, I, tap } from 'brule';
 import { clamp, delta, NORMAL, Range, transform } from 'calc';
-import { emit, I, tap } from 'func';
 import { Normal } from '../types';
 
 export type Offset = number | ((t: number) => number);

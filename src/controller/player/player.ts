@@ -1,5 +1,5 @@
-import { Range, progress } from 'calc';
-import { emit, I, tap } from 'func';
+import { emit, I, tap } from 'brule';
+import { progress, Range } from 'calc';
 
 export type PlayerEvents = {
   onComplete?: VoidFunction;
@@ -8,7 +8,7 @@ export type PlayerEvents = {
   onUpdate?: (progress: number) => void;
 };
 
-export const player = (events?: PlayerEvents): any => {
+export const player = (events?: PlayerEvents) => {
   const emitter = emit<number>();
   let frame: null | number = null;
 
@@ -20,7 +20,7 @@ export const player = (events?: PlayerEvents): any => {
     const getDelta = (now: number) => now - start;
     const getProgress = (delta: number) => progress(delta + initial, range);
 
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       const recurse = I(getDelta)
         .I(getProgress)
         .I(tap(emitter.emit))
@@ -40,16 +40,16 @@ export const player = (events?: PlayerEvents): any => {
   };
 
   return {
-    play: (args: { from?: number; duration?: number }) => {
-      const duration = args.duration || 300;
-      const from = args.from || 0;
+    play: (args?: { from?: number; duration?: number }): Promise<void> => {
+      const duration = args?.duration || 300;
+      const from = args?.from || 0;
       return loop(duration, from, performance.now());
     },
     pause: () => {
+      events?.onPause?.();
       if (frame) {
         cancelAnimationFrame(frame);
         frame = null;
-        events?.onPause?.();
       }
     },
     subscribe: emitter.subscribe,

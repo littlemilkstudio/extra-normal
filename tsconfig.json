@@ -15,10 +15,10 @@
     "strict": true,
     "target": "ES2015",
     "paths": {
+      "brule/*": ["./brule/*"],
       "calc/*": ["./calc/*"],
       "controller/*": ["./controller/*"],
       "ease/*": ["./ease/*"],
-      "func/*": ["./func/*"],
       "normal/*": ["./normal/*"]
     }
   },

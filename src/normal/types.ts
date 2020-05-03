@@ -1,4 +1,4 @@
-import { Subscribe } from 'func';
+import { Subscribe } from 'brule';
 
 /**
  * ### Normal

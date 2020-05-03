@@ -1,4 +1,4 @@
-import { emit, I, tap } from 'func';
+import { emit, I, tap } from 'brule';
 import { delta, clamp, transform, NORMAL, Range } from 'calc';
 import { Normal } from '../types';
 

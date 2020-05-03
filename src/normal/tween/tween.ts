@@ -1,6 +1,6 @@
+import { emit, I, tap } from 'brule';
 import { clamp, lerp, NORMAL } from 'calc';
 import { Ease, ease } from 'ease';
-import { emit, I, tap } from 'func';
 import { Normal } from '../types';
 
 export type Value = {
