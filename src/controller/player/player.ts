@@ -72,10 +72,17 @@ const normal = sequence({
 })
 
 const Component = (controller) => {
-  normal.subscribe(v => {
-    // DOM manipulations
-  })
-  constroller.subscribe(normal.progress);
-};
+  useEffect(() => normal.subscribe(// DOM manipulations), []);
+  useEffect(() => constroller.subscribe(normal.progress), [controller]);
 
+  return <div
+    onClick={() => controller.play({
+      from: normal.getProgress(),
+      duration: normal.duration()
+    })}
+    onMouseMove={() => {
+      normal.progress(|0 - 1|)
+    }}
+  />
+};
 */
