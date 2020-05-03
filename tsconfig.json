@@ -18,7 +18,7 @@
       "calc/*": ["./calc/*"],
       "controller/*": ["./controller/*"],
       "ease/*": ["./ease/*"],
-      "emitter/*": ["./emitter/*"],
+      "func/*": ["./func/*"],
       "normal/*": ["./normal/*"]
     }
   },

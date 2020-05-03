@@ -1,14 +1,14 @@
-import { emitter } from './emitter';
+import { emit } from './emit';
 
-describe('emitter()', () => {
+describe('emit()', () => {
   it('Can Emit to multiple subscribers', () => {
-    const stream = emitter<number>();
+    const emitter = emit<number>();
     const subscribers = Array.from({ length: 10 }, () => jest.fn());
     subscribers.forEach((subscriber) => {
-      stream.subscribe(subscriber);
+      emitter.subscribe(subscriber);
     });
 
-    stream.next(1);
+    emitter.emit(1);
     subscribers.forEach((subscriber) => {
       expect(subscriber).toBeCalledTimes(1);
     });
@@ -18,15 +18,15 @@ describe('emitter()', () => {
     const numSubscribers = 50;
     const unnsubscribedIndex = numSubscribers / 2;
 
-    const stream = emitter<number>();
+    const emitter = emit<number>();
     const subscribers = Array.from({ length: numSubscribers }, () => jest.fn());
 
     const unsubscribe = subscribers.map((subscriber) => {
-      return stream.subscribe(subscriber);
+      return emitter.subscribe(subscriber);
     });
     unsubscribe[unnsubscribedIndex]();
 
-    stream.next(1);
+    emitter.emit(1);
     subscribers.forEach((subscriber, i) => {
       expect(subscriber).toBeCalledTimes(i === unnsubscribedIndex ? 0 : 1);
     });

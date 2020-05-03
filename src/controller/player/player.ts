@@ -55,28 +55,30 @@ const normal = tween({
 });
 
 const Component = () => {
-  const progress = value(0).pipe(
-    I( v => clamp(v, NORMAL) )
-    .I( v => clamp(v, NORMAL) )
-    .I( v => clamp(v, NORMAL) )
-    .O
-  );
-
-  progress.subscribe(normal.progress);
+  const progress = value(0)
+    .pipe(v => clamp(v, NORMAL))
+    .play(p => normal.progress(p));
 
   const { play, pause } = player({
+    scale: 2,
     normal,
+    events: {
+      onPlay: () => send({type: 'AnimationStart' }),
+      onUpdate,
+      onComplete: () => send({type: 'AnimationComplete' }),
+      onPause
+    }
   });
 
-  normal.subscribe((v) => {
-    // some DOM manipulation;
-  });
+  normal.subscribe(v => {
+    console.log(V);
+  })
 
   onClick={() => play({ 
     from: progress.get() 
-  }).then(() => send({type: 'AnimationComplete' }))}
+  })}
 
-  onMouseMove={y => setprogress(normalizedY)}
+  onMouseMove={y => progress.set(normalizedY)}
 };
 
 */

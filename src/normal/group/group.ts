@@ -1,4 +1,4 @@
-import { emitter } from 'emitter';
+import { emit, I, tap } from 'func';
 import { delta, clamp, transform, NORMAL, Range } from 'calc';
 import { Normal } from '../types';
 
@@ -35,10 +35,9 @@ type Interpolator<T extends Config<Entry>> = (p: number) => Value<T>;
 const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
   const normalized = normalize(config);
   return (p) => {
-    const clamped = clamp(p, NORMAL);
     return Object.entries(config).reduce<Value<T>>((value, [key, entry]) => {
       value[key as keyof T] = entry.progress(
-        transform(clamped, normalized[key], NORMAL)
+        transform(p, normalized[key], NORMAL)
       );
       return value;
     }, {} as Value<T>);
@@ -46,7 +45,7 @@ const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
 };
 
 export const group = <T extends Config<Entry>>(config: T): Normal<Value<T>> => {
-  const stream = emitter<Value<T>>();
+  const emitter = emit<Value<T>>();
   const configured = {
     range: Object.values(config).reduce<Range>(
       (r, entry) => {
@@ -61,11 +60,9 @@ export const group = <T extends Config<Entry>>(config: T): Normal<Value<T>> => {
     duration: () => {
       return delta(configured.range);
     },
-    progress: (p: number) => {
-      const interpolated = configured.interpolator(p);
-      stream.next(interpolated);
-      return interpolated;
-    },
-    subscribe: stream.subscribe,
+    progress: I((p: number) => clamp(p, NORMAL))
+      .I(configured.interpolator)
+      .I(tap(emitter.emit)),
+    subscribe: emitter.subscribe,
   };
 };
