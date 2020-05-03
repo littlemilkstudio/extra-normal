@@ -1,1 +1,1 @@
-export { player, Config as PlayerConfig } from './player';
+export { player, PlayerEvents } from './player';
