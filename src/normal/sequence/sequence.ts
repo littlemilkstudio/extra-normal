@@ -1,9 +1,9 @@
+import { emit, I, tap } from 'brule';
 import { clamp, delta, NORMAL, Range, transform } from 'calc';
-import { emitter } from 'emitter';
 import { Normal } from '../types';
 
-type Offset = number | ((t: number) => number);
-type Entry<T = any> = {
+export type Offset = number | ((t: number) => number);
+export type Entry<T = any> = {
   normal: Normal<T>;
   offset?: Offset;
 };
@@ -56,9 +56,8 @@ type Interpolator<T extends Config<Entry>> = (p: number) => Value<T>;
 const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
   const normalized = normalize(config);
   return (p) => {
-    const clamped = clamp(p, NORMAL);
     return Object.entries(config).reduce<Value<T>>((value, [key, entry]) => {
-      const entryProgress = transform(clamped, normalized[key], NORMAL);
+      const entryProgress = transform(p, normalized[key], NORMAL);
       value[key as keyof T] = entry.normal.progress(entryProgress);
       return value;
     }, {} as Value<T>);
@@ -68,7 +67,7 @@ const interpolator = <T extends Config<Entry>>(config: T): Interpolator<T> => {
 export const sequence = <T extends Config<Entry>>(
   config: T
 ): Normal<Value<T>> => {
-  const stream = emitter<Value<T>>();
+  const emitter = emit<Value<T>>();
   const configured = {
     range: range(config),
     interpolator: interpolator(config),
@@ -78,11 +77,9 @@ export const sequence = <T extends Config<Entry>>(
     duration: () => {
       return delta(configured.range);
     },
-    progress: (p: number) => {
-      const interpolated = configured.interpolator(p);
-      stream.next(interpolated);
-      return interpolated;
-    },
-    subscribe: stream.subscribe,
+    progress: I((p: number) => clamp(p, NORMAL))
+      .I(configured.interpolator)
+      .I(tap(emitter.emit)),
+    subscribe: emitter.subscribe,
   };
 };

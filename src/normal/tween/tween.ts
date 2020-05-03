@@ -1,6 +1,6 @@
+import { emit, I, tap } from 'brule';
 import { clamp, lerp, NORMAL } from 'calc';
 import { Ease, ease } from 'ease';
-import { emitter } from 'emitter';
 import { Normal } from '../types';
 
 export type Value = {
@@ -45,15 +45,16 @@ export function tween<T extends Value>(config: Config<T>): Normal<ShapeOf<T>>;
 export function tween<T>(
   config: ConditionalConfig<T>
 ): Normal<ShapeOf<T> | number> {
-  const stream = emitter<ShapeOf<T> | number>();
+  const emitter = emit<ShapeOf<T> | number>();
+  const configured = {
+    interpolator: interpolator(config),
+  };
 
   return {
     duration: () => config.duration || 300,
-    progress: (v) => {
-      const interpolated = interpolator(config)(v);
-      stream.next(interpolated);
-      return interpolated;
-    },
-    subscribe: stream.subscribe,
+    progress: I((p: number) => clamp(p, NORMAL))
+      .I(configured.interpolator)
+      .I(tap(emitter.emit)),
+    subscribe: emitter.subscribe,
   };
 }

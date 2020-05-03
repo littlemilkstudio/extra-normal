@@ -1,4 +1,4 @@
-import { Subscribe } from 'emitter';
+import { Subscribe } from 'brule';
 
 /**
  * ### Normal

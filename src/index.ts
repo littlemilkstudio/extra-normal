@@ -1,3 +1,5 @@
+export * from './brule';
 export * from './calc';
-export * from './emitter';
+export * from './controller';
+export * from './ease';
 export * from './normal';

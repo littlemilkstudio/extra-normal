@@ -1,5 +1,5 @@
+import { emit, I, tap } from 'brule';
 import { clamp, delta, NORMAL, Range, transform } from 'calc';
-import { emitter } from 'emitter';
 import { Normal } from '../types';
 
 type Stagger = number | ((i: number) => number);
@@ -48,7 +48,7 @@ export const interpolator = <T>(config: Config<T>) => {
 };
 
 export const stagger = <T>(config: Config<T>): Normal<T[]> => {
-  const stream = emitter<T[]>();
+  const emitter = emit<T[]>();
   const configured = {
     range: range(config),
     interpolator: interpolator(config),
@@ -58,11 +58,9 @@ export const stagger = <T>(config: Config<T>): Normal<T[]> => {
     duration: () => {
       return delta(configured.range);
     },
-    progress: (p: number) => {
-      const interpolated = configured.interpolator(p);
-      stream.next(interpolated);
-      return interpolated;
-    },
-    subscribe: stream.subscribe,
+    progress: I((p: number) => clamp(p, NORMAL))
+      .I(configured.interpolator)
+      .I(tap(emitter.emit)),
+    subscribe: emitter.subscribe,
   };
 };

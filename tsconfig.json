@@ -15,10 +15,11 @@
     "strict": true,
     "target": "ES2015",
     "paths": {
+      "brule/*": ["./brule/*"],
       "calc/*": ["./calc/*"],
+      "controller/*": ["./controller/*"],
       "ease/*": ["./ease/*"],
-      "emitter/*": ["./emitter/*"],
-      "normal/*": ["./normal/*"],
+      "normal/*": ["./normal/*"]
     }
   },
   "include": ["src/**/*.ts"],
