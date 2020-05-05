@@ -55,34 +55,85 @@ export const player = (events?: PlayerEvents) => {
     subscribe: emitter.subscribe,
   };
 };
+/**
+ * - Normal is a memory stream. holds onto duration and previous progress.
+ * - can only observe one source at a time.
+ */
 
 /**
-const { subscibe, play, pause } = player({
-  onPlay: () => send({type: 'AnimationStart' }),
-  onUpdate,
-  onComplete: () => send({type: 'AnimationComplete' }),
-  onPause
-});
+ * - Controllers are observables
+ */
 
+/**
+const anim1 = emitter();
 
-const normal = sequence({
-  anim1: {},
-  anim2: {},
-  anim3: {}
-})
+const memoryStream = normal
+  .interpolate
+  .I(sequence => sequence.anim1)
+  .I(tap(anim1.emit));
 
-const Component = (controller) => {
-  useEffect(() => normal.subscribe(// DOM manipulations), []);
-  useEffect(() => constroller.subscribe(normal.progress), [controller]);
+memoryStream({
+  next: normal.interpolate
+})(
+  .next() // composable
+  .observing()
 
-  return <div
-    onClick={() => controller.play({
-      from: normal.getProgress(),
-      duration: normal.duration()
-    })}
-    onMouseMove={() => {
-      normal.progress(|0 - 1|)
-    }}
-  />
+const Component = () => {
+  const [current, send] = useMachine(machine, 'idle');
+
+  const animate = player({
+    onStart,
+    onNext,
+    onComplete
+  });
+
+  const drag = (events) => {
+    let observing = false;
+
+    const complete = () => {
+      events?.onComplete?.();
+      observing = false;
+      oberver.unobserve()
+    }
+
+    const setObserver = () => {
+      observer.unobserve();
+      observer.setUnobserve(() => isObserving() && complete());
+    }
+
+    return {
+      observe: ({ next, error, complete }) => {
+        const current = oberver.current();
+        events?.onStart();
+        setObserver(observer);
+      },
+      next: compose(v => isObserving() && observer.next(v)),
+      complete 
+    }
+  };
+  const drag();
+
+  useEffect(() => {
+    if (['dragging'].includes(state)) {
+      retrun drag.observe(stream);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (['animating'].includes(state)) {
+      retrun animate.observe(stream);
+    }
+  }, [state]);
+
+  return (
+    <div
+      onClick={() => send('PLAY')}
+      onMouseOver={() => send('START_DRAGGING', 0)}
+      onMouseMove={() => drag.next.o(
+        composer(e => e.mouse.pageY)
+        .I(v(progress([0, DISTANCE])))
+      )}
+    />
+  );
 };
 */
