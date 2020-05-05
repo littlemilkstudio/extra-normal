@@ -1,19 +1,22 @@
 import { emit } from '../emit';
 import { compose, tap } from '../pipe';
+import { clamp } from 'calc';
 
-type Next = () => void;
-type Observer = {
+type Observer<T = any, U = any> = {
   error?: VoidFunction;
-  next: Next;
+  next: (v: T) => U;
   complete?: VoidFunction;
 };
 
 type Unobserve = VoidFunction;
-type Observable = {
-  observe: (observer?: any, intitial?: any) => Unobserve;
+type Observable<T = any> = {
+  observe: (
+    observer: Observer<T> | Observer<T>['next'],
+    intitial?: T
+  ) => Unobserve;
 };
 
-export const stream = <A, B>(next: (a: A) => B) => {
+export const memoryStream = <A, B>(next: (a: A) => B) => {
   const emitter = emit<B>();
 
   let unobserve: Unobserve = () => null;
@@ -46,6 +49,66 @@ export const stream = <A, B>(next: (a: A) => B) => {
 };
 
 /**
+ * const someObservable = observable(({ next, complete, error }) => {
+ *    const interval = setInterval(() => next('ping!'), 100);
+
+      return {
+        stop: () => clearInterval(interval)
+      };
+ * });
+
+   const bar = somObervable.observe({
+     next: console.log,
+   });
+
+   bar.stop();
+ */
+
+const observable = <T extends Record<string, any>>(rx: (o: Observer) => T) => ({
+  observe: (observer: Observer | Observer['next']) => {
+    return typeof observer === 'function'
+      ? { ...rx({ next: observer }) }
+      : { ...rx(observer) };
+  },
+});
+
+const unicast = <T = any>(): Observer<T> & Observable<T> => {
+  let observer: Observer<T> | null = null;
+  const getObserver = () => {
+    return observer;
+  };
+  const setObserver = (
+    newObserver: Observer<T> | Observer<T>['next'] | null
+  ) => {
+    getObserver()?.complete?.();
+    observer =
+      typeof newObserver === 'function' ? { next: newObserver } : newObserver;
+  };
+
+  const complete = () => {
+    setObserver(null);
+  };
+
+  return {
+    observe: (newObserver: Observer<T> | Observer<T>['next']) => {
+      setObserver(newObserver);
+      return complete;
+    },
+    next: compose((v: T) => getObserver()?.next(v)),
+    complete,
+  };
+};
+
+const drag = unicast<number>();
+const normalStream = memoryStream((v: number) => clamp(v, [0, 1]));
+
+normalStream.source(drag);
+normalStream.subscribe((v) => v + 1);
+
+drag.next(1);
+drag.complete?.();
+
+/**
  * type Controller = {
  *  observe: (next, initialValue) -> unobserve,
  *  next?
@@ -54,7 +117,19 @@ export const stream = <A, B>(next: (a: A) => B) => {
  */
 
 /**
- * const controller = <T>() => {
+ * rx: Observer -> Observer?
+ *
+ * const observable = (rx) => {
+ *   return {
+ *    observe: observer => rx(observer):
+ *   }
+ * };
+ *
+ * const someObservable = observable(({ error, next, complete }) => {
+ *
+ * });
+ *
+ * const unicast = <T>(rx) => {
  *   let observer = null;
  *   const getObserver = () => {
  *      return observer;
@@ -64,12 +139,14 @@ export const stream = <A, B>(next: (a: A) => B) => {
  *   }
  *
  *   const complete = () => {
+ *    rx.complete()
  *    getObserver()?.complete?.()
  *    setObserver(null);
  *   };
  *
  *   return {
- *     observe: newObserver => {
+ *     observe: (newObserver) => {
+ *      complete();
  *      setObserver(newObserver);
  *      return complete;
  *     }
@@ -81,7 +158,7 @@ export const stream = <A, B>(next: (a: A) => B) => {
 
 /**
   const animate = player();
-  const drag = controller<number>();
+  const drag = unicast<number>();
   const streamNormal = stream(value(clamp)(R_N));
  
   useEffect(() => 
@@ -92,8 +169,9 @@ export const stream = <A, B>(next: (a: A) => B) => {
   useEffect(() => 
     ['animating'].includes(state) && 
     stream
-      .source(animate)
-      .complete(send('ANIMATION_COMPLETE'));
+      .source(animate({
+        complete: () => send('ANIMATION_COMPLETE')
+      }))
   , [state]);
 
   useEffect(() => 
