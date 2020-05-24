@@ -1,32 +1,40 @@
 /**
  * const drag = controller();
  * const animate = animator();
- * const stream = stream(
+ * const interpolator = stream(
  *  I(value(clamp(normal)))
  *  .I(sequence.interpolate)
  * );
  *
- * start and return stop methods
- * useEffect(() => stream.start(interpolated => {
- *  Do dom manipulations here. could also plug in an emitter if needed.
- * }), [s]);
+ * useEffect(
+ *  () => interpolator.start(interpolated => {
+ *    DOM manipulations here.
+ *  }),
+ *  [s]
+ * );
  *
- * useEffect(() =>
- *    ['animate'].includes(current) &&
- *    animate.start(stream, {
+ * useEffect(
+ *  () => ['animate'].includes(current) &&
+ *    animate(interpolator, {
  *      duration: sequence.duration,
  *      onAnimationComplete: () => send('animationComplete');
- *    })
- * , [animate, s]);
+ *    }),
+ *  [animate, s]
+ * );
  *
- * useEffect(() =>
- *    ['dragging'].includes(current) &&
- *    drag.start(stream)
- * }, [drag, s]);
+ * useEffect(
+ *  () => ['dragging'].includes(current) &&
+ *    drag(interpolator),
+ *  [drag, s]
+ * );
  *
  * useEffect(() => {
- *  const handleMouseMove = I(getCoordFromEvent)
- *    .I((coord) => drag.next(coord));
+ *  const handleMouseMove = (
+ *    I(getXFromEvent)
+ *    .I(getDelta)
+ *    .I(value(progress([0, DRAG_DISTANCE])))
+ *    .I((normalized) => drag.next(normalized))
+ *  );
  *  const handleMouseUp = () => send('dragComplete');
  *
  *  document.addEvenListener('mouseMove', handleMouseMove);
