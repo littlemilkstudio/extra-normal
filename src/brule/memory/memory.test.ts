@@ -1,5 +1,5 @@
 import { push, stop, start, pull, Signal, Callbag } from '../callbag';
-import { memory } from './stream';
+import { memory } from './memory';
 
 const createLogSink = () => {
   const log: number[] = [];
