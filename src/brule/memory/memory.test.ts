@@ -15,7 +15,7 @@ const createLogSink = () => {
   };
 };
 
-describe('memory(initialValue)(inputSink)', () => {
+describe('memory(inputSink)', () => {
   it('is pushable', () => {
     const { log, sink } = createLogSink();
     const memorySink = memory(sink);
