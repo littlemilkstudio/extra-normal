@@ -1,4 +1,4 @@
-import { push, stop, start, Signal } from '../signal';
+import { push, stop, start, pull, Signal, Callbag } from '../signal';
 import { memory } from './stream';
 
 const createLogSink = () => {
@@ -114,9 +114,6 @@ describe('memory(initialValue)(inputSink)', () => {
       pushFromSink = () => signal.talkback(push(5));
     };
 
-    const memorySink = memory(0)(terminatableSink);
-    terminateFromSink();
-
     const onSourceTerminate = jest.fn();
     let terminateFromSource: VoidFunction = () => null;
     const source = (sinkSignal: Signal) => {
@@ -132,9 +129,8 @@ describe('memory(initialValue)(inputSink)', () => {
       sinkSignal.talkback(start(talkback));
     };
 
+    const memorySink = memory(0)(terminatableSink);
     source(start(memorySink));
-    pushFromSink();
-    expect(onSourceTerminate).toHaveBeenCalledTimes(0);
 
     terminateFromSink();
     terminateFromSink();
@@ -142,5 +138,36 @@ describe('memory(initialValue)(inputSink)', () => {
     terminateFromSource();
 
     expect(onSourceTerminate).toHaveBeenCalledTimes(1);
+  });
+
+  it('sink cant communicate anything other than terminate to source', () => {
+    let pushFromSink: VoidFunction = () => null;
+    let pullFromSink: VoidFunction = () => null;
+    let startFromSink: VoidFunction = () => null;
+    const terminatableSink = (signal: Signal) => {
+      if (!signal.isStart) return;
+      startFromSink = () => signal.talkback(start((() => null) as Callbag));
+      pullFromSink = () => signal.talkback(pull());
+      pushFromSink = () => signal.talkback(push(5));
+    };
+
+    const memorySink = memory(0)(terminatableSink);
+
+    const onSourceTerminate = jest.fn();
+    const source = (sinkSignal: Signal) => {
+      if (!sinkSignal.isStart) return;
+      const talkback = (signal: Signal) => {
+        if (signal.isStop) {
+          onSourceTerminate();
+        }
+      };
+      sinkSignal.talkback(start(talkback));
+    };
+
+    source(start(memorySink));
+    startFromSink();
+    pullFromSink();
+    pushFromSink();
+    expect(onSourceTerminate).toHaveBeenCalledTimes(0);
   });
 });
