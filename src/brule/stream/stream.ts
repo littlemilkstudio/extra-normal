@@ -1,8 +1,8 @@
 import { I, tap } from '../pipe';
 import { Signal, start, stop, push, Callbag } from '../signal';
 
-export const memory = <T>(initial: T) => (inputSink: Callbag) => {
-  let memorized = initial;
+export const memory = <T>(inputSink: Callbag<T>) => {
+  let memorized: T | null = null;
   const setMemorized = (v: T) => (memorized = v);
   const memorizeAndPush = I(tap(setMemorized)).I(push);
   let terminateSource: VoidFunction = () => null;
@@ -22,7 +22,10 @@ export const memory = <T>(initial: T) => (inputSink: Callbag) => {
     })
   );
 
-  return function outputSink(inputSourceSignal: Signal) {
+  /**
+   * Create output sink.
+   */
+  return (inputSourceSignal: Signal<T>) => {
     if (inputSourceSignal.isStart) {
       /**
        * Kill existing sources.
@@ -35,7 +38,7 @@ export const memory = <T>(initial: T) => (inputSink: Callbag) => {
        * Push memorized value in case source wants
        * to create a driver based off of it.
        */
-      inputSourceSignal.talkback(push(memorized));
+      memorized && inputSourceSignal.talkback(push(memorized));
       /**
        * Tell source to start up a driver.
        */

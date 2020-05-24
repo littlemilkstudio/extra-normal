@@ -18,7 +18,7 @@ const createLogSink = () => {
 describe('memory(initialValue)(inputSink)', () => {
   it('is pushable', () => {
     const { log, sink } = createLogSink();
-    const memorySink = memory(0)(sink);
+    const memorySink = memory(sink);
 
     memorySink(push(1));
     memorySink(push(2));
@@ -29,7 +29,7 @@ describe('memory(initialValue)(inputSink)', () => {
 
   it('pushes memorized value to a source on handshake', () => {
     const { sink } = createLogSink();
-    const memorySink = memory(0)(sink);
+    const memorySink = memory(sink);
 
     memorySink(push(1));
     memorySink(push(2));
@@ -63,7 +63,7 @@ describe('memory(initialValue)(inputSink)', () => {
       sinkSignal.talkback(start(talkback));
     };
 
-    const memorySink = memory(0)(sink);
+    const memorySink = memory(sink);
 
     const onTerminate1 = jest.fn();
     const terminatableSource1 = terminatableSource(onTerminate1);
@@ -84,8 +84,6 @@ describe('memory(initialValue)(inputSink)', () => {
       terminateFromSink = () => signal.talkback(stop());
     };
 
-    const memorySink = memory(0)(sink);
-
     let terminateFromSource: VoidFunction = () => null;
     const onSourceTerminate = jest.fn();
     const source = (sinkSignal: Signal) => {
@@ -99,6 +97,7 @@ describe('memory(initialValue)(inputSink)', () => {
       sinkSignal.talkback(start(talkback));
     };
 
+    const memorySink = memory(sink);
     source(start(memorySink));
     terminateFromSource();
     terminateFromSink();
@@ -107,11 +106,9 @@ describe('memory(initialValue)(inputSink)', () => {
 
   it('can terminate a relationship from the sink', () => {
     let terminateFromSink: VoidFunction = () => null;
-    let pushFromSink: VoidFunction = () => null;
     const terminatableSink = (signal: Signal) => {
       if (!signal.isStart) return;
       terminateFromSink = () => signal.talkback(stop());
-      pushFromSink = () => signal.talkback(push(5));
     };
 
     const onSourceTerminate = jest.fn();
@@ -129,7 +126,7 @@ describe('memory(initialValue)(inputSink)', () => {
       sinkSignal.talkback(start(talkback));
     };
 
-    const memorySink = memory(0)(terminatableSink);
+    const memorySink = memory(terminatableSink);
     source(start(memorySink));
 
     terminateFromSink();
@@ -151,7 +148,7 @@ describe('memory(initialValue)(inputSink)', () => {
       pushFromSink = () => signal.talkback(push(5));
     };
 
-    const memorySink = memory(0)(terminatableSink);
+    const memorySink = memory(terminatableSink);
 
     const onSourceTerminate = jest.fn();
     const source = (sinkSignal: Signal) => {
