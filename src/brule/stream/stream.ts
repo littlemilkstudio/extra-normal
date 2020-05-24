@@ -1,5 +1,5 @@
 import { I, tap } from '../pipe';
-import { Signal, start, stop, push, Callbag } from '../signal';
+import { Signal, start, stop, push, Callbag } from '../callbag';
 
 export const memory = <T>(inputSink: Callbag<T>) => {
   let memorized: T | null = null;

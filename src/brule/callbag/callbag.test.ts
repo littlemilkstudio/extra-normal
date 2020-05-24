@@ -1,4 +1,4 @@
-import { start, push, pull, stop, Callbag } from './signal';
+import { start, push, pull, stop, Callbag } from './callbag';
 
 describe('start(talkback)', () => {
   it('returns a start identifiable signal', () => {

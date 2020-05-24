@@ -1,4 +1,4 @@
-import { push, stop, start, pull, Signal, Callbag } from '../signal';
+import { push, stop, start, pull, Signal, Callbag } from '../callbag';
 import { memory } from './stream';
 
 const createLogSink = () => {
