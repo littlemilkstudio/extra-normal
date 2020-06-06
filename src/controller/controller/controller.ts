@@ -9,11 +9,14 @@ export const controller = <A, B>(op: (a: A) => B) => {
   let pushToSource: ((v: A) => void) | null = null;
   let terminateSouce: VoidFunction | null = null;
 
-  const source = (signal: Signal<B>) => {
-    if (!signal.isStart) return;
-    pushToSource = (v: A) => signal.talkback(push(op(v)));
-    terminateSouce = () => signal.talkback(stop());
-    signal.talkback(
+  const source = (sink: Callbag<B>) => {
+    pushToSource = (v: A) => sink(push(op(v)));
+    terminateSouce = () => {
+      sink(stop());
+      pushToSource = null;
+      terminateSouce = null;
+    };
+    sink(
       start((s: Signal<B>) => {
         if (s.isStop) {
           pushToSource = null;
@@ -24,7 +27,7 @@ export const controller = <A, B>(op: (a: A) => B) => {
   };
 
   const apply = (sink: Callbag<B>) => {
-    source(start(sink));
+    source(sink);
     return terminateSouce;
   };
 
