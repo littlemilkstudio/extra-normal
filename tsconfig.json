@@ -19,7 +19,8 @@
       "calc/*": ["./calc/*"],
       "controller/*": ["./controller/*"],
       "ease/*": ["./ease/*"],
-      "normal/*": ["./normal/*"]
+      "normal/*": ["./normal/*"],
+      "stream/*": ["./stream/*"]
     }
   },
   "include": ["src/**/*.ts"],

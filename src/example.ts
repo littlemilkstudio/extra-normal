@@ -1,10 +1,12 @@
 /**
- * const drag = controller();
- * const animate = animator();
  * const interpolator = stream(
  *  I(value(clamp(normal)))
  *  .I(sequence.interpolate)
  * );
+ * const drag = controller(value(progress([0, DRAG_LENGTH])));
+ * const animate = animator(progress => ({
+ *  duration: progress * sequence.duration(),
+ * }));
  *
  * useEffect(
  *  () => interpolator.start(interpolated => {
@@ -15,10 +17,7 @@
  *
  * useEffect(
  *  () => ['animate'].includes(current) &&
- *    animate(interpolator, {
- *      duration: sequence.duration,
- *      onAnimationComplete: () => send('animationComplete');
- *    }),
+ *    animate(interpolator),
  *  [animate, s]
  * );
  *
@@ -33,7 +32,7 @@
  *    I(getXFromEvent)
  *    .I(getDelta)
  *    .I(value(progress([0, DRAG_DISTANCE])))
- *    .I((normalized) => drag.next(normalized))
+ *    .I(drag.next)
  *  );
  *  const handleMouseUp = () => send('dragComplete');
  *

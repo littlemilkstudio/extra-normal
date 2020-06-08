@@ -1,4 +1,4 @@
-import { push } from '../brule';
+import { push } from 'brule';
 import { stream } from './stream';
 
 describe('stream(op)', () => {

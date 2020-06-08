@@ -66,7 +66,8 @@
       "^calc/(.*)": "<rootDir>/src/calc/$1",
       "^controller/(.*)": "<rootDir>/src/controller/$1",
       "^ease/(.*)": "<rootDir>/src/ease/$1",
-      "^normal/(.*)": "<rootDir>/src/normal/$1"
+      "^normal/(.*)": "<rootDir>/src/normal/$1",
+      "^stream/(.*)": "<rootDir>/src/stream/$1"
     }
   }
 }
