@@ -4,9 +4,10 @@
  *  .I(sequence.interpolate)
  * );
  * const drag = controller(value(progress([0, DRAG_LENGTH])));
- * const animate = animator(progress => ({
- *  duration: progress * sequence.duration(),
- * }));
+ * const animate = animator({
+ *  reverse: true;
+ *  deferred: true;
+ * });
  *
  * useEffect(
  *  () => interpolator.start(interpolated => {
@@ -16,7 +17,7 @@
  * );
  *
  * useEffect(
- *  () => ['animate'].includes(current) &&
+ *  () => ['animating'].includes(current) &&
  *    animate(interpolator),
  *  [animate, s]
  * );
@@ -45,7 +46,10 @@
  * }, )
  *
  * return (
- *   <div onMouseDown={e => send('dragStart', e.y)}>
+ *  <>
+ *    <button onClick={animate.pause} />
+ *    <div onMouseDown={e => send('dragStart', e.y)} />
+ *  </>
  * );
  *
  */
